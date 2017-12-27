@@ -1,0 +1,35 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+<meta charset="utf-8">  
+<title>视频帧列表</title>  
+<!-- 插入jquery -->  
+<script src="{{url_for('static', filename='jquery.min.js')}}"></script>  
+<script type=text/javascript>  
+var $SCRIPT_ROOT = {{request.script_root|tojson|safe}};  
+</script>  
+<script type=text/javascript>  
+$(function() {  
+	//获取url中的参数
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
+    video_name=getUrlParam('video_name')
+    $('#video_name').text('视频' + video_name)
+    $.post($SCRIPT_ROOT + '/simple/image',{'video_name':video_name},function(data){
+		length = data.images.length
+		for(var i = 0;i<length;i++){
+			$("#images").append(i + '. ' + data.images[i] + " <a href=/simple/mark?video_name=" + video_name + "&image_id="+ data.images[i] +">标注</a> <br>");	
+		}
+	});
+});
+</script>  
+</head>  
+<body>  
+<h1 id="video_name"></h1>
+<hr>
+<div id="images"></div>
+</body>
+</html>

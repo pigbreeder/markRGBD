@@ -1,0 +1,30 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+<meta charset="utf-8">  
+<title>视频列表</title>  
+<!-- 插入jquery -->  
+<script src="{{url_for('static', filename='jquery.min.js')}}"></script>  
+<script type=text/javascript>  
+var $SCRIPT_ROOT = {{request.script_root|tojson|safe}};  
+</script>  
+<script type=text/javascript>  
+$(function() {  
+
+    $.post($SCRIPT_ROOT + '/simple/video',{},function(data){
+		length = data.videos.length
+		for(var i = 0;i<length;i++){
+			name_lst = data.videos[i].split('/');
+			name = name_lst[name_lst.length-1]
+			$("#videos").append("<li> "+ name + "</li> <a href=/simple/image?video_name=" + data.videos[i] + ">标注</a>");	
+		}
+	});
+});
+</script>  
+</head>  
+<body>  
+<h1>视频列表</h1>
+<hr>
+<ul id="videos"></ul>
+</body>  
+</html>   

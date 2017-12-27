@@ -1,0 +1,204 @@
+<!DOCTYPE html>  
+<html>  
+    <head>  
+        <meta charset="utf-8">  
+        <title>视频列表</title>  
+        <!-- 插入jquery -->  
+        <script src="{{url_for('static', filename='jquery.min.js')}}"></script>  
+        <script type=text/javascript>  
+var $SCRIPT_ROOT = {{request.script_root|tojson|safe}};  
+        </script>  
+        <script type=text/javascript>  
+var mark_list = new Array();
+var mark_div_list = new Array();
+var green_point = -1;
+$(function() {  
+    function SolidCircle(cx, cy, r, p, color){
+        var s = 1/(r/p);
+        ret = new Array();
+        for (var i = 0; i < Math.PI*2; i+=s) {
+            div = document.createElement("div");
+            ret.push(div);
+            div.style.position = "absolute";
+            div.style.left = Math.sin(i)*r+cx+"px";
+            div.style.top = Math.cos(i)*r+cy+"px";
+            div.style.width = p+"px";
+            div.style.height = p+"px";
+            div.style.backgroundColor = color;
+            document.body.appendChild(div);
+        }
+        return ret;
+    }
+    //SolidCircle(450, 200, 7, 2, "red");
+    //获取url中的参数
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]); return null; //返回参数值
+    }
+    video_name=getUrlParam('video_name')
+    video_name_short=getUrlParam('video_name').split('/')
+    video_name_short=video_name_short[video_name_short.length - 1];
+    image_id=getUrlParam('image_id')
+    var t_src = $(".div1 img").attr('src');
+    $(".div1 img").attr('src',t_src+'/'+ video_name_short + '/rgb/' + image_id)
+        $.post($SCRIPT_ROOT + '/simple/mark/adjoin',{'video_name':video_name,'image_id':image_id},function(data){
+            if (data[0] != '-1')
+                $("#previous_image").attr("href","/simple/mark?video_name=" + video_name + "&image_id=" + data[0]);
+            if (data[1] != '-1')
+                $("#next_image").attr("href","/simple/mark?video_name=" + video_name + "&image_id=" + data[1]);
+        });
+
+    $.post($SCRIPT_ROOT + '/simple/mark/list',{'video_name':video_name,'image_id':image_id},function(data){
+        var length = data.length;
+        mark_list = data;
+        for(var i =0;i<length;i++){
+            point= new Object();
+            point.x = 100 + parseInt(mark_list[i]['x']);
+            point.y = 100 + parseInt(mark_list[i]['y']);
+            ret = SolidCircle(point.x,point.y,5,2,'red');
+            point.circle = ret;
+            idx = mark_div_list.length;
+            mark_div_list.push(point);
+            $("#mark_list").append("<li idx=" + idx + ">(" + mark_list[i]['x'] + ',' + mark_list[i]['y'] + ")</li>");
+        }	
+    }); 
+    $(".div1").click(function(e) {
+
+        var offset = $(this).offset();
+        var relativeX = (e.pageX - offset.left);
+        var relativeY = (e.pageY - offset.top);
+        //alert(offset.top +',' + offset.left);
+        //alert(e.pageX +',' + e.pageY);
+        ret = SolidCircle(e.pageX,e.pageY,5,2,'green');
+        point= new Object();
+        //point.x = relativeX;
+        //point.y = relativeY;
+        point.x = e.pageX;
+        point.y = e.pageY;
+        point.circle = ret; idx = mark_div_list.length;
+        mark_div_list.push(point);
+        mark_list.push({'x':relativeX,'y':relativeY}); 
+        if (green_point != -1){
+            $("#mark_list li[idx="+green_point+"]").attr('style','');
+            for(var j =0;j<mark_div_list[green_point].circle.length;j++)
+                mark_div_list[green_point].circle[j].style.backgroundColor='red';
+            //ret = SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'red');
+        }
+        green_point = idx;
+        $("#mark_list").append("<li style='background-color: green'  idx=" + idx + ">(" + relativeX + ',' + relativeY + ")</li>");
+
+        //alert("X: " + relativeX + "  Y: " + relativeY);
+        //alert(mark_list);
+        //style='background-color: #00ff00' 
+
+    });
+    $("#reset_mark").click(function(e) {
+        for(var i=0;i<mark_div_list.length;i++){
+             console.log(i);
+             console.log(mark_div_list[i]);
+             console.log(typeof(mark_div_list[i]));
+             if(typeof(mark_div_list[i]) == 'undefined'){
+                console.log(i);
+                continue;
+            }
+            for(var j=0;j<mark_div_list[i].circle.length;j++){
+                document.body.removeChild(mark_div_list[i].circle[j]);	
+            }
+        }
+        $("#mark_list").empty();
+        mark_list.splice(0,mark_list.length);
+        mark_div_list.splice(0,mark_div_list.length);
+        green_point = -1;
+    });
+    $("#remove_mark").click(function(e) {
+        if(typeof(mark_div_list[green_point]) == undefined)
+            return;
+        for(var j=0;j<mark_div_list[green_point].circle.length;j++){
+            document.body.removeChild(mark_div_list[green_point].circle[j]);	
+        }
+        $("#mark_list li[idx="+green_point+']').remove();
+        delete mark_list[green_point];
+        delete mark_div_list[green_point];
+        green_point = -1;
+    });
+    $("#submit_mark").click(function(e) {
+        data = {'video_name':video_name,'image_id':image_id, 'mark_list':mark_list};
+        data = JSON.stringify(data);
+        $.ajax({
+            type:'POST',
+            url:$SCRIPT_ROOT + '/simple/mark/save',
+            contentType: "application/json; charset=utf-8",
+            data:data,
+            dataType:'json',
+            success:function(data){
+            alert('保存完成');
+            } 
+        }); 
+    });
+    $(".div2 ol").on("click","li", function() {
+       //do something here
+        var idx = $(this).attr('idx');
+        //alert(idx);
+        if (green_point != -1){
+            $("#mark_list li[idx="+green_point+"]").attr('style','');
+            for(var j =0;j<mark_div_list[green_point].circle.length;j++)
+                mark_div_list[green_point].circle[j].style.backgroundColor='red';
+            //SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'red');
+        }
+        green_point = parseInt(idx);
+        for(var j =0;j<mark_div_list[green_point].circle.length;j++)
+            mark_div_list[green_point].circle[j].style.backgroundColor='green';
+        //SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'green');
+        $("#mark_list li[idx="+green_point+"]").attr('style','background-color:green');
+        //$("#mark_list").append("<li style='background-color: #00ff00'  idx=" + idx + ">(" + relativeX + ',' + relativeY + ")</li>");
+
+    });
+
+});
+</script>  
+<style> 
+.container {
+    width:auto;
+    disply:inline;
+    width:700px;
+    height:600px;
+
+}
+.div1 {
+    float:left;
+    width: 960px;
+    height: 540px;
+    /*border: 1px solid blue;*/
+    left:100px;
+    top:100px;
+    position:absolute;
+}
+
+.div2 {
+    float:left;
+    margin-left:20px;
+    width: 300px;
+    height: 360px;    
+    border: 1px solid red;
+    left:760px;
+    top:100px;
+    position:absolute;
+}
+ </style>
+</head>  
+    <body>  
+        <h1>标记点列表</h1>
+        <hr>
+        <div class='container'>
+            <div class="div1"><img src="{{url_for('static',filename='data')}}"/></div>
+            <div class="div2"><ol id='mark_list'></ol></div>
+        </div>
+        <button id='remove_mark'>去除选中标记</button>
+        <button id='reset_mark'>重置图像标记</button>
+        <button id='submit_mark'>提交</button>
+        <hr>
+        <a href=''class='button' id='previous_image'>上一个</a>
+        <a href=''class='button' id='next_image'>下一个</a>
+    </body>  
+</html>   
