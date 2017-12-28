@@ -40,13 +40,22 @@ $(function() {
     video_name_short=getUrlParam('video_name').split('/')
     video_name_short=video_name_short[video_name_short.length - 1];
     image_id=getUrlParam('image_id')
-    var t_src = $(".div1 img").attr('src');
-    $(".div1 img").attr('src',t_src+'/'+ video_name_short + '/rgb/' + image_id)
+    // var t_src = $(".div1 img").attr('src');
+    $(".div1 img").attr('src','/static/data/'+ video_name_short + '/rgb/' + image_id)
         $.post($SCRIPT_ROOT + '/simple/mark/adjoin',{'video_name':video_name,'image_id':image_id},function(data){
-            if (data[0] != '-1')
-                $("#previous_image").attr("href","/simple/mark?video_name=" + video_name + "&image_id=" + data[0]);
-            if (data[1] != '-1')
-                $("#next_image").attr("href","/simple/mark?video_name=" + video_name + "&image_id=" + data[1]);
+            $("#image_order").text("标记点列表" + (1+data.idx) + '/' + data.tot);
+            if (data.st != '-1'){
+                $("#previous_image").attr("href","/simple/mark?video_name=" + video_name + "&image_id=" + data.st);
+            }else{
+                $("#previous_image").attr("href",'javascript:void(0)');
+                $("#previous_image").attr("class",'button disabled');
+            }
+            if (data.ed != '-1'){
+                $("#next_image").attr("href","/simple/mark?video_name=" + video_name + "&image_id=" + data.ed);
+            }else{
+                $("#next_image").attr("href",'javascript:void(0)');
+                $("#next_image").attr("class",'button disabled');
+            }
         });
 
     $.post($SCRIPT_ROOT + '/simple/mark/list',{'video_name':video_name,'image_id':image_id},function(data){
@@ -54,7 +63,7 @@ $(function() {
         mark_list = data;
         for(var i =0;i<length;i++){
             point= new Object();
-            point.x = 100 + parseInt(mark_list[i]['x']);
+            point.x = 20 + parseInt(mark_list[i]['x']);
             point.y = 100 + parseInt(mark_list[i]['y']);
             ret = SolidCircle(point.x,point.y,5,2,'red');
             point.circle = ret;
@@ -158,11 +167,26 @@ $(function() {
 });
 </script>  
 <style> 
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 .container {
-    width:auto;
-    disply:inline;
-    width:700px;
-    height:600px;
+    width: auto;
+    height: 600px;
+    display:inline-block;
 
 }
 .div1 {
@@ -170,28 +194,30 @@ $(function() {
     width: 960px;
     height: 540px;
     /*border: 1px solid blue;*/
-    left:100px;
+    left:20px;
     top:100px;
     position:absolute;
 }
 
 .div2 {
+    overflow:scroll; 
     float:left;
     margin-left:20px;
     width: 300px;
-    height: 360px;    
+    height: 540px;    
     border: 1px solid red;
-    left:760px;
+    left:1000px;
     top:100px;
     position:absolute;
 }
  </style>
 </head>  
     <body>  
-        <h1>标记点列表</h1>
+        <h1 id='image_order'></h1>
         <hr>
         <div class='container'>
-            <div class="div1"><img src="{{url_for('static',filename='data')}}"/></div>
+            <div class="div1"><img src=""/></div>
+            <!-- <div class="div1"><img src="{{url_for('static',filename='data')}}"/></div> -->
             <div class="div2"><ol id='mark_list'></ol></div>
         </div>
         <button id='remove_mark'>去除选中标记</button>

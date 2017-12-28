@@ -5,17 +5,18 @@ import json
 import numpy as np
 import cv2
 from config import *
+from collections import OrderedDict
 ##################################################################
 folders = list(filter(lambda x: len(x) > 0, folders.split()))
 folders = list(map(lambda x: base_path + '/' + x, folders))
-gen_file = {'insert_time': 0, 'rgb_path': 'rgb', 'depth_path': 'depth'}
-coordinate_file = {}
+gen_file = OrderedDict({'insert_time': 3, 'rgb_path': 'rgb', 'depth_path': 'depth'})
+coordinate_file = OrderedDict()
 
 acquire_files = 'cd %s && ls -l | grep .*png|awk \'{print $NF}\''
 
 
 def cal_3d_coordinate(folder, file_lst, matrix):
-	coordinate_file[folder] = {}
+	coordinate_file[folder] = OrderedDict()
 	for f in file_lst:
 		img_mat = cv2.imread(folder + '/depth/' + f, cv2.IMREAD_ANYDEPTH)
 		depth_mat = img_mat / 1000.0
@@ -31,10 +32,10 @@ def gen_save_file():
 	for folder, matrix in zip(folders, matrixs):
 		output = os.popen(acquire_files % (folder + '/rgb'))
 		files = list(map(lambda x: x.strip(), output.readlines()))
-		gen_file['videos'] = {}
-		gen_file['videos'][folder] = {}
+		gen_file['videos'] = OrderedDict()
+		gen_file['videos'][folder] = OrderedDict()
 		gen_file['videos'][folder]['matrix'] = matrix
-		gen_file['videos'][folder]['data'] = {}
+		gen_file['videos'][folder]['data'] = OrderedDict()
 		for e in files:
 			gen_file['videos'][folder]['data'][e] = list()
 		#cal_3d_coordinate(folder, files.keys(), matrix)

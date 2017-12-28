@@ -46,7 +46,7 @@ def mark_adjoin():
     video_name = request.form.get("video_name","")
     image_id = request.form.get("image_id","")
     marks = [1,1]
-    #marks = image_data.get_image_adjoin(video_name,image_id)
+    marks = image_data.get_image_adjoin(video_name,image_id)
     return jsonify(marks)
 
 @simple_page.route('/mark/list', methods=['POST'])
@@ -68,4 +68,15 @@ def mark_save():
     #     print(data,file=f)
     image_data.mark_image(data['video_name'],data['image_id'],data['mark_list'])
     return jsonify({'success':'1'})
-#	return
+
+@simple_page.route('/mark/check', methods=['POST'])
+def mark_save():
+    # video_name = request.form.get("video_name","")
+    # image_id = request.form.get("image_id","")
+    # mark_list = request.form.get("mark_list","")
+    data = json.loads(request.data)
+    # with open('debug','a+') as f:
+    #     print(request.data,file=f)
+    #     print(data,file=f)
+    image_data.mark_check(data['video_name'],data['image_id'],data['mark_list'])
+    return jsonify({'success':'1'})
