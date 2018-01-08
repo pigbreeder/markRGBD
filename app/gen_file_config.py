@@ -37,7 +37,7 @@ def gen_save_file():
 		gen_file['videos'][folder]['matrix'] = matrix
 		gen_file['videos'][folder]['data'] = OrderedDict()
 		for e in files:
-			gen_file['videos'][folder]['data'][e] = list()
+			gen_file['videos'][folder]['data'][e] = {'mark_list':[],'coordinate_list':[]}
 		#cal_3d_coordinate(folder, files.keys(), matrix)
 
 	output = json.dumps(gen_file)
