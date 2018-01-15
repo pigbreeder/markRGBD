@@ -20,8 +20,8 @@ class ImageData(object):
 		self.image_3D_coordinate = OrderedDict()
 		with open(save_file) as f:
 			self.cache_data = json.load(f)
-		with open(image_3D_coordinate_file) as f:
-			self.image_3D_coordinate = json.load(f)
+		# with open(image_3D_coordinate_file) as f:
+		# 	self.image_3D_coordinate = json.load(f)
 		self.cache_data['insert_time'] = time.time()
 
 	def get_image_adjoin(self, video_name='', image_id=''):

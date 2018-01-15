@@ -4,7 +4,8 @@
         <meta charset="utf-8">  
         <title>视频列表</title>  
         <!-- 插入jquery -->  
-        <script src="{{url_for('static', filename='jquery.min.js')}}"></script>  
+        <script src="{{url_for('static', filename='jquery.min.js')}}"></script>
+        <script src="{{url_for('static', filename='draw.js')}}"></script>
         <script type=text/javascript>  
 var $SCRIPT_ROOT = {{request.script_root|tojson|safe}};  
         </script>  
@@ -185,7 +186,7 @@ $(function() {
             success:function(data){
             alert('保存完成');
             } 
-        }); 
+        });
     });
     $(".div2 ol").on("click","li", function() {
        //do something here
@@ -207,53 +208,9 @@ $(function() {
     });
 
 });
-</script>  
-<style> 
-.button {
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-.container {
-    width: auto;
-    height: 600px;
-    display:inline-block;
-
-}
-.div1 {
-    float:left;
-    width: 960px;
-    height: 540px;
-    /*border: 1px solid blue;*/
-    left:20px;
-    top:100px;
-    position:absolute;
-}
-
-.div2 {
-    overflow:scroll; 
-    float:left;
-    margin-left:20px;
-    width: 300px;
-    height: 540px;    
-    border: 1px solid red;
-    left:1000px;
-    top:100px;
-    position:absolute;
-}
- </style>
-</head>  
+</script>
+        <link rel="stylesheet" href="{{url_for('static', filename='mark.css')}}" type="text/css" />
+</head>
     <body>  
         <h1 id='image_order'></h1>
         <hr>
@@ -261,6 +218,7 @@ $(function() {
             <div class="div1"><img src=""/></div>
             <!-- <div class="div1"><img src="{{url_for('static',filename='data')}}"/></div> -->
             <div class="div2"><ol id='mark_list'></ol></div>
+            <div class="line_container"></div>
         </div>
         <button id='remove_mark'>去除选中标记</button>
         <button id='reset_mark'>重置图像标记</button>
