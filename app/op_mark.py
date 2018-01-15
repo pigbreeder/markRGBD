@@ -57,7 +57,7 @@ class ImageData(object):
 		if self.image_3D_coordinate.get(image_id, None) == None:
 			self.image_3D_coordinate[image_id] = np.fromfile(video_name + '/depth/' + image_id[:-4] + '.txt', dtype=camera_space_point_type)
 		h, w = mark_point.split(',')
-		idx = int(h) * WIDTH + int(w)
+		idx = int(float(h)) * WIDTH + int(float(w))
 		ok = not (np.inf in self.image_3D_coordinate[image_id][idx] or -np.inf in self.image_3D_coordinate[image_id][idx])
 		ok = 'true' if ok else 'false'
 		return {'ok':str(ok),'coordinate':list(map(lambda x:str(x),self.image_3D_coordinate[image_id][idx].tolist())) }
@@ -69,7 +69,11 @@ class ImageData(object):
 			return self.cache_data['videos'][video_name]['data'][image_id]
 		return {'mark_list':[],'coordinate_list':[]}
 
-	def mark_image(self, video_name='', image_id='', mark_list=[], coordinate_list=[]):
+	def mark_image(self, video_name='', image_id='', mark_list=None, coordinate_list=None):
+		if mark_list == None:
+			mark_list = []
+		if coordinate_list == None:
+			coordinate_list = []
 		self.cache_data['videos'][video_name]['data'][image_id] = {'mark_list':mark_list, 'coordinate_list':coordinate_list}
 		t_time = self.cache_data['insert_time']
 		tt_time = time.time()

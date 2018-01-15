@@ -7,7 +7,7 @@ import cv2
 from config import *
 from collections import OrderedDict
 ##################################################################
-folders = list(filter(lambda x: len(x) > 0, folders.split()))
+folders = list(filter(lambda x: len(x) > 0, folders.split(',')))
 folders = list(map(lambda x: base_path + '/' + x, folders))
 gen_file = OrderedDict({'insert_time': 3, 'rgb_path': 'rgb', 'depth_path': 'depth'})
 coordinate_file = OrderedDict()
@@ -29,12 +29,12 @@ def cal_3d_coordinate(folder, file_lst, matrix):
 
 
 def gen_save_file():
-	for folder, matrix in zip(folders, matrixs):
+	gen_file['videos'] = OrderedDict()
+	for folder in folders:
 		output = os.popen(acquire_files % (folder + '/rgb'))
 		files = list(map(lambda x: x.strip(), output.readlines()))
-		gen_file['videos'] = OrderedDict()
 		gen_file['videos'][folder] = OrderedDict()
-		gen_file['videos'][folder]['matrix'] = matrix
+		# gen_file['videos'][folder]['matrix'] = matrix
 		gen_file['videos'][folder]['data'] = OrderedDict()
 		for e in files:
 			gen_file['videos'][folder]['data'][e] = {'mark_list':[],'coordinate_list':[]}

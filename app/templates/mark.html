@@ -4,12 +4,16 @@
         <meta charset="utf-8">  
         <title>视频列表</title>  
         <!-- 插入jquery -->  
-        <script src="{{url_for('static', filename='jquery.min.js')}}"></script>
-        <script src="{{url_for('static', filename='draw.js')}}"></script>
-        <script type=text/javascript>  
+        <script src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js/draw.js')}}"></script>
+        <script src="{{url_for('static', filename='js/mark.js')}}"></script>
+        <script src="{{url_for('static', filename='js/config.js')}}"></script>
+        <script type=text/javascript>
 var $SCRIPT_ROOT = {{request.script_root|tojson|safe}};  
         </script>  
-        <script type=text/javascript>  
+        <script type=text/javascript>
+
+
 var mark_list = new Array();
 var coordinate_list = new Array();
 var mark_div_list = new Array();
@@ -28,8 +32,11 @@ $(function() {
             div.style.height = p+"px";
             div.style.backgroundColor = color;
             if (i == 0){
-                div.style.color = '#28ff28';
-                div.innerHTML = idx;
+
+                if(SWITCH_SHOW_MARK_IDX){
+                    div.style.color = COLOR_MARK_IDX;
+                    div.innerHTML = idx;
+                }
             }
             document.body.appendChild(div);
         }
@@ -71,9 +78,9 @@ $(function() {
         var length = data.mark_list.length;
         for(var i =0;i<length;i++){
             point= new Object();
-            point.x = 20 + parseInt(mark_list[i]['x']);
-            point.y = 100 + parseInt(mark_list[i]['y']);
-            ret = SolidCircle(point.x,point.y,5,2,'red', i);
+            point.x = WIDTH_OFFSET + parseInt(mark_list[i]['x']);
+            point.y = HEIGHT_OFFSET + parseInt(mark_list[i]['y']);
+            ret = SolidCircle(point.x,point.y,5,2,COLOR_MARK, i);
             point.circle = ret;
             idx = mark_div_list.length;
             mark_div_list.push(point);
@@ -102,7 +109,7 @@ $(function() {
                     return;
                 }else{
                     
-                    ret = SolidCircle(e.pageX,e.pageY,5,2,'#FF9224',coordinate_list.length);
+                    ret = SolidCircle(e.pageX,e.pageY,5,2,COLOR_LIGHT_MARK,coordinate_list.length);
                     point= new Object();
                     point.x = e.pageX;
                     point.y = e.pageY;
@@ -114,7 +121,7 @@ $(function() {
                     if (green_point != -1){
                         $("#mark_list li[idx="+green_point+"]").attr('style','');
                         for(var j =0;j<mark_div_list[green_point].circle.length;j++)
-                            mark_div_list[green_point].circle[j].style.backgroundColor='red';
+                            mark_div_list[green_point].circle[j].style.backgroundColor= COLOR_MARK;
                         //ret = SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'red');
                     }
                     green_point = idx;
@@ -195,12 +202,12 @@ $(function() {
         if (green_point != -1){
             $("#mark_list li[idx="+green_point+"]").attr('style','');
             for(var j =0;j<mark_div_list[green_point].circle.length;j++)
-                mark_div_list[green_point].circle[j].style.backgroundColor='red';
+                mark_div_list[green_point].circle[j].style.backgroundColor=COLOR_MARK;
             //SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'red');
         }
         green_point = parseInt(idx);
         for(var j =0;j<mark_div_list[green_point].circle.length;j++)
-            mark_div_list[green_point].circle[j].style.backgroundColor='green';
+            mark_div_list[green_point].circle[j].style.backgroundColor=COLOR_LIGHT_MARK;
         //SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'green');
         $("#mark_list li[idx="+green_point+"]").attr('style','background-color:green;color:white');
         //$("#mark_list").append("<li style='background-color: #00ff00'  idx=" + idx + ">(" + relativeX + ',' + relativeY + ")</li>");
@@ -226,5 +233,8 @@ $(function() {
         <hr>
         <a href=''class='button' id='previous_image'>上一个</a>
         <a href=''class='button' id='next_image'>下一个</a>
+        <input type="text" name="height_slice" value="10">
+        <input type="text" name="width_slice" value="10">
+        <button class='button ' onclick="generatePoints()">生成</button>
     </body>  
 </html>   

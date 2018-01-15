@@ -1,4 +1,6 @@
-function SolidCircle(cx, cy, r, p, color, idx){
+ document.write("<script language=javascript src='/static/js/mark.js'></script>");
+ document.write("<script language=javascript src='/static/js/config.js'></script>");
+ function SolidCircle(cx, cy, r, p, color, idx){
     var s = 1/(r/p);
     ret = new Array();
     for (var i = 0; i < Math.PI*2; i+=s) {
@@ -11,8 +13,10 @@ function SolidCircle(cx, cy, r, p, color, idx){
         div.style.height = p+"px";
         div.style.backgroundColor = color;
         if (i == 0){
-            div.style.color = '#28ff28';
-            div.innerHTML = idx;
+            if(SWITCH_SHOW_MARK_IDX){
+                    div.style.color = COLOR_MARK_IDX;
+                    div.innerHTML = idx;
+                }
         }
         document.body.appendChild(div);
     }
@@ -69,6 +73,22 @@ function createPoint(container, x, y) {
 // output: cross_lst
 // test case:point_lst=[{'x':0,'y':0},{'x':0,'y':100},{'x':100,'y':0},{'x':100,'y':100}];height_slice=3;width_slice=3;
 // test case:point_lst=[{'x':0,'y':0},{'x':80,'y':100},{'x':100,'y':0},{'x':180,'y':100}];height_slice=3;width_slice=3;
+function generatePoints(){
+    height_slice= $("input[name='height_slice']").val();
+    width_slice= $("input[name='width_slice']").val();
+    console.log(height_slice,width_slice);
+    console.log(typeof(height_slice),width_slice);
+    if(mark_list.length != 4){
+        alert('请先选择四个标定点');
+        return;
+    }
+    point_lst = mark_list.slice();
+    $("#reset_mark").click();
+    point_lst = calcCrossPoint(point_lst,parseInt(height_slice),parseInt(width_slice));
+    console.log(point_lst);
+    getPointCoordinate(video_name, image_id, point_lst);
+
+}
 function calcCrossPoint(point_lst, height_slice, width_slice) {
     // LU, LB, RU RB
     cross_lst =[];
@@ -83,9 +103,9 @@ function calcCrossPoint(point_lst, height_slice, width_slice) {
         cur_lr_b = cur_r_x - cur_l_x;
         cur_lr_c = cur_l_x * cur_r_y - cur_l_y * cur_r_x;
 
-        console.log(cur_l_y,cur_l_x,cur_r_y,cur_r_x);
-        console.log(cur_lr_a,cur_lr_b,cur_lr_c);
-        console.log('======')
+//        console.log(cur_l_y,cur_l_x,cur_r_y,cur_r_x);
+//        console.log(cur_lr_a,cur_lr_b,cur_lr_c);
+//        console.log('======')
         for(var j =0;j<width_slice;j++){
             cur_u_y = point_lst[0].y - (point_lst[0].y - point_lst[2].y)/width_slice * j;
             cur_u_x = point_lst[0].x - (point_lst[0].x - point_lst[2].x)/width_slice * j;
@@ -101,8 +121,8 @@ function calcCrossPoint(point_lst, height_slice, width_slice) {
             cross_x = (cur_lr_b * cur_ub_c - cur_ub_b * cur_lr_c) / D;
             cross_y = (cur_ub_a * cur_lr_c - cur_lr_a * cur_ub_c) / D;
             cross_lst.push({'x':cross_x, 'y':cross_y});
-            console.log(cur_u_y,cur_u_x,cur_b_y,cur_b_x);
-            console.log(cur_ub_a,cur_ub_b,cur_ub_c,D);
+//            console.log(cur_u_y,cur_u_x,cur_b_y,cur_b_x);
+//            console.log(cur_ub_a,cur_ub_b,cur_ub_c,D);
         }
     }
     return cross_lst;
