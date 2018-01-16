@@ -8,6 +8,7 @@
         <script src="{{url_for('static', filename='js/draw.js')}}"></script>
         <script src="{{url_for('static', filename='js/mark.js')}}"></script>
         <script src="{{url_for('static', filename='js/config.js')}}"></script>
+        <script src="{{url_for('static', filename='js/util.js')}}"></script>
         <script type=text/javascript>
 var $SCRIPT_ROOT = {{request.script_root|tojson|safe}};  
         </script>  
@@ -19,36 +20,7 @@ var coordinate_list = new Array();
 var mark_div_list = new Array();
 var green_point = -1;
 $(function() {  
-    function SolidCircle(cx, cy, r, p, color, idx){
-        var s = 1/(r/p);
-        ret = new Array();
-        for (var i = 0; i < Math.PI*2; i+=s) {
-            div = document.createElement("div");
-            ret.push(div);
-            div.style.position = "absolute";
-            div.style.left = Math.sin(i)*r+cx+"px";
-            div.style.top = Math.cos(i)*r+cy+"px";
-            div.style.width = p+"px";
-            div.style.height = p+"px";
-            div.style.backgroundColor = color;
-            if (i == 0){
 
-                if(SWITCH_SHOW_MARK_IDX){
-                    div.style.color = COLOR_MARK_IDX;
-                    div.innerHTML = idx;
-                }
-            }
-            document.body.appendChild(div);
-        }
-        return ret;
-    }
-    //SolidCircle(450, 200, 7, 2, "red");
-    //获取url中的参数
-    function getUrlParam(name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
-        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
-        if (r != null) return unescape(r[2]); return null; //返回参数值
-    }
     video_name=getUrlParam('video_name')
     video_name_short=getUrlParam('video_name').split('/')
     video_name_short=video_name_short[video_name_short.length - 1];
@@ -92,7 +64,7 @@ $(function() {
         var offset = $(this).offset();
         var relativeX = (e.pageX - offset.left);
         var relativeY = (e.pageY - offset.top);
-        console.log(JSON.stringify({'video_name':video_name,'image_id':image_id,'mark':relativeY+','+relativeX}));
+        // console.log(JSON.stringify({'video_name':video_name,'image_id':image_id,'mark':relativeY+','+relativeX}));
         ok = true;
         $.ajax({
             type: 'POST',
@@ -101,8 +73,8 @@ $(function() {
             data: JSON.stringify({'video_name':video_name,'image_id':image_id,'mark':relativeY+','+relativeX}),
             dataType:'json',
             success: function(data){
-                console.log(data);
-                console.log(data.ok == 'false');
+                // console.log(data);
+                // console.log(data.ok == 'false');
                 if (data.ok == 'false'){
                     ok = false;
                     alert('该点坐标有问题，请选择其他坐标');
@@ -167,12 +139,11 @@ $(function() {
         mark_list_children = $('#mark_list').children();
         for(var j=0;j<mark_list_children.length;j++){
             mark_list_children[j].setAttribute('idx',j);
-            mark_div_list[j].circle[0].innerHTML = j;
+            if(SWITCH_SHOW_MARK_IDX){
+                mark_div_list[j].circle[CIRCLE_IDX_LOC].innerHTML = j;
+                mark_div_list[j].circle[CIRCLE_IDX_LOC].style.color = COLOR_MARK_IDX;
+            }
         }
-
-        // delete mark_list[green_point];
-        // delete coordinate_list[green_point];
-        // delete mark_div_list[green_point];
         green_point = -1;
     });
     $("#submit_mark").click(function(e) {
@@ -196,24 +167,34 @@ $(function() {
         });
     });
     $(".div2 ol").on("click","li", function() {
-       //do something here
         var idx = $(this).attr('idx');
-        //alert(idx);
         if (green_point != -1){
             $("#mark_list li[idx="+green_point+"]").attr('style','');
             for(var j =0;j<mark_div_list[green_point].circle.length;j++)
                 mark_div_list[green_point].circle[j].style.backgroundColor=COLOR_MARK;
-            //SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'red');
         }
         green_point = parseInt(idx);
         for(var j =0;j<mark_div_list[green_point].circle.length;j++)
             mark_div_list[green_point].circle[j].style.backgroundColor=COLOR_LIGHT_MARK;
-        //SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'green');
         $("#mark_list li[idx="+green_point+"]").attr('style','background-color:green;color:white');
-        //$("#mark_list").append("<li style='background-color: #00ff00'  idx=" + idx + ">(" + relativeX + ',' + relativeY + ")</li>");
 
     });
+    $("#show_mark_idx").click(function(){
+        if($(this).is(":checked")==true){
+            SWITCH_SHOW_MARK_IDX = true;
+            for(var j=0;j<mark_div_list.length;j++){
+                mark_div_list[j].circle[CIRCLE_IDX_LOC].innerHTML = j;
+                mark_div_list[j].circle[CIRCLE_IDX_LOC].style.color = COLOR_MARK_IDX;
+            }
 
+        }else{
+            //当前为不选中状态
+            SWITCH_SHOW_MARK_IDX = false;
+            for(var j=0;j<mark_div_list.length;j++){
+                mark_div_list[j].circle[CIRCLE_IDX_LOC].innerHTML = '';
+            }
+        }
+    });
 });
 </script>
         <link rel="stylesheet" href="{{url_for('static', filename='mark.css')}}" type="text/css" />
@@ -224,7 +205,7 @@ $(function() {
         <div class='container'>
             <div class="div1"><img src=""/></div>
             <!-- <div class="div1"><img src="{{url_for('static',filename='data')}}"/></div> -->
-            <div class="div2"><ol id='mark_list'></ol></div>
+            <div class="div2"><ol type="1" start="0" id='mark_list'></ol></div>
             <div class="line_container"></div>
         </div>
         <button id='remove_mark'>去除选中标记</button>
@@ -235,6 +216,7 @@ $(function() {
         <a href=''class='button' id='next_image'>下一个</a>
         <input type="text" name="height_slice" value="10">
         <input type="text" name="width_slice" value="10">
+        <input type="checkbox" id="show_mark_idx">是否显示标记编号
         <button class='button ' onclick="generatePoints()">生成</button>
     </body>  
 </html>   

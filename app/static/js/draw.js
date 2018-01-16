@@ -1,27 +1,5 @@
- document.write("<script language=javascript src='/static/js/mark.js'></script>");
- document.write("<script language=javascript src='/static/js/config.js'></script>");
- function SolidCircle(cx, cy, r, p, color, idx){
-    var s = 1/(r/p);
-    ret = new Array();
-    for (var i = 0; i < Math.PI*2; i+=s) {
-        div = document.createElement("div");
-        ret.push(div);
-        div.style.position = "absolute";
-        div.style.left = Math.sin(i)*r+cx+"px";
-        div.style.top = Math.cos(i)*r+cy+"px";
-        div.style.width = p+"px";
-        div.style.height = p+"px";
-        div.style.backgroundColor = color;
-        if (i == 0){
-            if(SWITCH_SHOW_MARK_IDX){
-                    div.style.color = COLOR_MARK_IDX;
-                    div.innerHTML = idx;
-                }
-        }
-        document.body.appendChild(div);
-    }
-    return ret;
-}
+document.write("<script language=javascript src='/static/js/mark.js'></script>");
+document.write("<script language=javascript src='/static/js/config.js'></script>");
 
 function line(startX, startY, endX, endY, container) {
     if (startX == endX) {
@@ -85,7 +63,7 @@ function generatePoints(){
     point_lst = mark_list.slice();
     $("#reset_mark").click();
     point_lst = calcCrossPoint(point_lst,parseInt(height_slice),parseInt(width_slice));
-    console.log(point_lst);
+//    console.log(point_lst);
     getPointCoordinate(video_name, image_id, point_lst);
 
 }
@@ -120,7 +98,7 @@ function calcCrossPoint(point_lst, height_slice, width_slice) {
             D = cur_lr_a * cur_ub_b - cur_ub_a * cur_lr_b;
             cross_x = (cur_lr_b * cur_ub_c - cur_ub_b * cur_lr_c) / D;
             cross_y = (cur_ub_a * cur_lr_c - cur_lr_a * cur_ub_c) / D;
-            cross_lst.push({'x':cross_x, 'y':cross_y});
+            cross_lst.push({'x':parseInt(cross_x), 'y':parseInt(cross_y)});
 //            console.log(cur_u_y,cur_u_x,cur_b_y,cur_b_x);
 //            console.log(cur_ub_a,cur_ub_b,cur_ub_c,D);
         }

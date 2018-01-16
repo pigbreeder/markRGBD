@@ -25,11 +25,11 @@ function getPointCoordinate(video_name, image_id, point_list){
             data: JSON.stringify({'video_name':video_name,'image_id':image_id,'mark':point_list[i].y+','+point_list[i].x}),
             dataType:'json',
             success: function(data){
-                console.log(data);
-                console.log(data.ok == 'false');
+//                console.log(data);
+//                console.log(data.ok == 'false');
                 if (data.ok == 'false'){
 //                    ok = false;
-//                    alert('该点坐标有问题，请选择其他坐标');
+                    console.log('该点坐标有问题，请选择其他坐标');
                     return;
                 }else{
 
