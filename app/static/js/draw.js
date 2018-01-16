@@ -70,7 +70,14 @@ function generatePoints(){
 function calcCrossPoint(point_lst, height_slice, width_slice) {
     // LU, LB, RU RB
     cross_lst =[];
-    for(var i = 0;i<height_slice;i++){
+    height_count = height_slice;
+    width_count = width_slice;
+    height_slice -= 1;
+    width_slice -= 1;
+    // 间隔要少一份，才能刚好对应上
+    // 4点2线交点
+
+    for(var i = 0;i<height_count;i++){
         cur_l_y = point_lst[0].y - (point_lst[0].y - point_lst[1].y)/height_slice * i;
         cur_l_x = point_lst[0].x - (point_lst[0].x - point_lst[1].x)/height_slice * i;
 
@@ -84,7 +91,7 @@ function calcCrossPoint(point_lst, height_slice, width_slice) {
 //        console.log(cur_l_y,cur_l_x,cur_r_y,cur_r_x);
 //        console.log(cur_lr_a,cur_lr_b,cur_lr_c);
 //        console.log('======')
-        for(var j =0;j<width_slice;j++){
+        for(var j =0;j<width_count;j++){
             cur_u_y = point_lst[0].y - (point_lst[0].y - point_lst[2].y)/width_slice * j;
             cur_u_x = point_lst[0].x - (point_lst[0].x - point_lst[2].x)/width_slice * j;
 

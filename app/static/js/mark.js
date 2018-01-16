@@ -1,4 +1,4 @@
-
+document.write("<script language=javascript src='/static/js/config.js'></script>");
 function drawPointInPic(mark_div_list, point_list){
     var length = point_list.length;
     for(var i =0;i<length;i++){
@@ -33,7 +33,7 @@ function getPointCoordinate(video_name, image_id, point_list){
                     return;
                 }else{
 
-                    ret = SolidCircle(WIDTH_OFFSET + point_list[i].x, HEIGHT_OFFSET + point_list[i].y, 5, 2, '#FF9224', coordinate_list.length);
+                    ret = SolidCircle(WIDTH_OFFSET + point_list[i].x, HEIGHT_OFFSET + point_list[i].y, 5, 2, COLOR_LIGHT_MARK, coordinate_list.length);
                     point= new Object();
                     point.x = WIDTH_OFFSET + point_list[i].x;
                     point.y = HEIGHT_OFFSET + point_list[i].y;
@@ -45,7 +45,7 @@ function getPointCoordinate(video_name, image_id, point_list){
                     if (green_point != -1){
                         $("#mark_list li[idx="+green_point+"]").attr('style','');
                         for(var j =0;j<mark_div_list[green_point].circle.length;j++)
-                            mark_div_list[green_point].circle[j].style.backgroundColor='red';
+                            mark_div_list[green_point].circle[j].style.backgroundColor=COLOR_MARK;
                         //ret = SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'red');
                     }
                     green_point = idx;
