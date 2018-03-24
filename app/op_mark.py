@@ -59,9 +59,25 @@ class ImageData(object):
 		h, w = mark_point.split(',')
 		idx = int(float(h)) * WIDTH + int(float(w))
 		ok = not (np.inf in self.image_3D_coordinate[image_id][idx] or -np.inf in self.image_3D_coordinate[image_id][idx])
-		ok = 'true' if ok else 'false'
-		return {'ok':str(ok),'coordinate':list(map(lambda x:str(x),self.image_3D_coordinate[image_id][idx].tolist())) }
-
+		# 差值计算
+		if not ok:
+			coordinate = self.cal_difference_value(image_id, w, idx)
+			return {'ok':'true','coordinate':list(map(lambda x:str(x),coordinate)) }
+		else:
+			return {'ok':'true','coordinate':list(map(lambda x:str(x),self.image_3D_coordinate[image_id][idx].tolist())) }
+	def cal_difference_value(self, image_id, w, index):
+		for i in range(int(w)):
+			idx1 = index - i
+			idx2 = index + i
+			if not (np.inf in self.image_3D_coordinate[image_id][idx2] or -np.inf in self.image_3D_coordinate[image_id][idx2]) and \
+				not (np.inf in self.image_3D_coordinate[image_id][idx1] or -np.inf in self.image_3D_coordinate[image_id][idx1]):
+				# debug_print((type(self.image_3D_coordinate[image_id][idx1].tolist()),'---',self.image_3D_coordinate[image_id][idx2]))
+				# debug_print(type((self.image_3D_coordinate[image_id][idx1] + self.image_3D_coordinate[image_id][idx2])/2))
+				ret_lst = []
+				for a, b in zip(self.image_3D_coordinate[image_id][idx1], self.image_3D_coordinate[image_id][idx2]):
+					ret_lst.append((float(a) + float(b))/2)
+				return ret_lst
+		return
 		
 
 	def get_image_mark(self, video_name='', image_id=''):
