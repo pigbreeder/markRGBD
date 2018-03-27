@@ -35,7 +35,8 @@ def image():
         # images = {'':'null','a':['img1','img2','img3'],'b':['ha1','ha2']}
         # images = images[video_name]
         images = image_data.get_images(video_name)
-        return jsonify({'images':images})
+        lens = image_data.get_images_marks(video_name)
+        return jsonify({'images':images,'lens':lens})
     return render_template('image.html')
 
 @simple_page.route('/mark',methods=['GET','POST'])

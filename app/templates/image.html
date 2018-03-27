@@ -21,7 +21,7 @@ $(function() {
     $.post($SCRIPT_ROOT + '/simple/image',{'video_name':video_name},function(data){
 		length = data.images.length
 		for(var i = 0;i<length;i++){
-			$("#images").append(i + '. ' + data.images[i] + " <a href=/simple/mark?video_name=" + video_name + "&image_id="+ data.images[i] +">标注</a> <br>");	
+			$("#images").append(i + '. ' + data.images[i] + " <a href=/simple/mark?video_name=" + video_name + "&image_id="+ data.images[i] +">标注</a> " + data.lens[i] + "<br>");	
 		}
 	});
 });

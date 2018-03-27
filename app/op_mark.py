@@ -50,7 +50,14 @@ class ImageData(object):
 			return list(self.cache_data['videos'][video_name]['data'].keys())
 		else:
 			return []
-
+	def get_images_marks(self, video_name=''):
+		if self.cache_data['videos'].get(video_name, None):
+			ret = []
+			for k in self.cache_data['videos'][video_name]['data'].keys():
+				ret.append(len(self.cache_data['videos'][video_name]['data'][k]['mark_list']))
+			return ret
+		else:
+			return []
 	def get_3d_coordinate(self, video_name='', image_id=''):
 		return self.image_3D_coordinate['videos'][video_name][image_id]
 	def mark_check(self, video_name='', image_id='', mark_point=''):
