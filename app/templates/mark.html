@@ -21,6 +21,7 @@ var mark_div_list = new Array();
 var green_point = -1;
 $(function() {  
 
+    $("#show_mark_idx").attr("checked",SWITCH_SHOW_MARK_IDX);
     video_name=getUrlParam('video_name')
     video_name_short=getUrlParam('video_name').split('/')
     video_name_short=video_name_short[video_name_short.length - 1];
