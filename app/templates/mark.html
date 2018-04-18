@@ -57,7 +57,7 @@ $(function() {
             point.circle = ret;
             idx = mark_div_list.length;
             mark_div_list.push(point);
-            $("#mark_list").append("<li idx=" + idx + ">(" + mark_list[i]['x'] + ',' + mark_list[i]['y'] + ")<pre>" + coordinate_list[i]['x']+ coordinate_list[i]['y'] + coordinate_list[i]['z'] + "</li>");
+            $("#mark_list").append("<li idx=" + idx + ">(" + mark_list[i]['x'] + ',' + mark_list[i]['y'] + ")<pre>" + coordinate_list[i]['x']+ coordinate_list[i]['y'] + coordinate_list[i]['z'] + "</pre></li>");
         }	
     }); 
     $(".div1").click(function(e) {
@@ -86,19 +86,32 @@ $(function() {
                     point= new Object();
                     point.x = e.pageX;
                     point.y = e.pageY;
-                    point.circle = ret; 
-                    idx = mark_div_list.length;
-                    mark_div_list.push(point);
-                    mark_list.push({'x':relativeX,'y':relativeY});
-                    coordinate_list.push({'x':data.coordinate[0],'y':data.coordinate[1],'z':data.coordinate[2]});
-                    if (green_point != -1){
-                        $("#mark_list li[idx="+green_point+"]").attr('style','');
-                        for(var j =0;j<mark_div_list[green_point].circle.length;j++)
+                    point.circle = ret;
+                    if(SWITCH_MODIFY_MARK == true && green_point != -1){ // modify 修正点
+                        SWITCH_MODIFY_MARK=false;
+                        mark_div_list[green_point] = point;
+                        mark_list[green_point] = {'x':relativeX,'y':relativeY};
+                        $("#mark_list li[idx="+green_point+']').html("(" + relativeX + ',' + relativeY + ")<pre>" + data.coordinate + "</pre>");
+                         mark_div_list[green_point].circle[CIRCLE_IDX_LOC].innerHTML = green_point;
+                         for(var j =0;j<mark_div_list[green_point].circle.length;j++){
+
                             mark_div_list[green_point].circle[j].style.backgroundColor= COLOR_MARK;
-                        //ret = SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'red');
+                        }
+                    }else{ // 插入新点
+                        idx = mark_div_list.length;
+                        mark_div_list.push(point);
+                        mark_list.push({'x':relativeX,'y':relativeY});
+                        coordinate_list.push({'x':data.coordinate[0],'y':data.coordinate[1],'z':data.coordinate[2]});
+                        if (green_point != -1){
+                            $("#mark_list li[idx="+green_point+"]").attr('style','');
+                            for(var j =0;j<mark_div_list[green_point].circle.length;j++)
+                                mark_div_list[green_point].circle[j].style.backgroundColor= COLOR_MARK;
+                            //ret = SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'red');
+                        }
+                        green_point = idx;
+                        $("#mark_list").append("<li style='background-color:green;color:white'  idx=" + idx + ">(" + relativeX + ',' + relativeY + ")<pre>" + data.coordinate + "</pre></li>");
                     }
-                    green_point = idx;
-                    $("#mark_list").append("<li style='background-color:green;color:white'  idx=" + idx + ">(" + relativeX + ',' + relativeY + ")<pre>" + data.coordinate + "</li>");
+
                 }
             },
             error: function(data){
@@ -146,6 +159,19 @@ $(function() {
             }
         }
         green_point = -1;
+    });
+    $("#modify_mark").click(function(e) {
+        if(green_point == -1 || typeof(mark_div_list[green_point]) == undefined)
+            return;
+        for(var j=0;j<mark_div_list[green_point].circle.length;j++){
+            document.body.removeChild(mark_div_list[green_point].circle[j]);
+        }
+        SWITCH_MODIFY_MARK=true;
+        $("#mark_list li[idx="+green_point+']').html("s请选择新点");
+
+        delete mark_list[green_point];
+        delete coordinate_list[green_point];
+        delete mark_div_list[green_point];
     });
     $("#submit_mark").click(function(e) {
         mark_list = mark_list.filter(function(val){
@@ -209,6 +235,7 @@ $(function() {
             <div class="div2"><ol type="1" start="0" id='mark_list'></ol></div>
             <div class="line_container"></div>
         </div>
+        <button id='modify_mark'>修正选中标记</button>
         <button id='remove_mark'>去除选中标记</button>
         <button id='reset_mark'>重置图像标记</button>
         <button id='submit_mark'>提交</button>
