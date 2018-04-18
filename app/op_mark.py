@@ -108,3 +108,11 @@ class ImageData(object):
 		cmd = 'mv %s %s' % (save_file, save_file + str(times))
 		with open(save_file, 'w') as f:
 			f.write(json.dumps(self.cache_data))
+	def get_premark(self,video_name,image_id):
+		data = self.get_image_adjoin(video_name,image_id)
+		pre = data['st']
+		if pre == -1:
+			return {'data':'start page not own pre'}
+		pre_data = self.cache_data['videos'][video_name]['data'][pre]
+		return {'mark_list': pre_data['mark_list'], 'coordinate_list': pre_data['coordinate_list']}
+		pass

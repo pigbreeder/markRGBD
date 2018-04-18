@@ -82,3 +82,14 @@ def mark_check():
     debug_print(ret)
     # ret = image_data.mark_check(video_name, image_id, mark)
     return jsonify(ret)
+
+@simple_page.route('/mark/getPrePoint', methods=['POST'])
+def get_pre_mark():
+    # video_name = request.form.get("video_name","")
+    # image_id = request.form.get("image_id","")
+    # mark = request.form.get("mark","")
+    data = json.loads(request.data)
+    ret = image_data.get_premark(data['video_name'],data['image_id'])
+    # debug_print(ret)
+    # ret = image_data.mark_check(video_name, image_id, mark)
+    return jsonify(ret)

@@ -12,6 +12,49 @@ function drawPointInPic(mark_div_list, point_list){
         $("#mark_list").append("<li idx=" + idx + ">(" + point_list[i]['x'] + ',' + point_list[i]['y'] + ")<pre>" + coordinate_list[i]['x']+ coordinate_list[i]['y'] + coordinate_list[i]['z'] + "</li>");
     }
 }
+function preGeneratePoints(){
+    video_name=getUrlParam('video_name')
+    image_id=getUrlParam('image_id')
+    $.ajax({
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            url: $SCRIPT_ROOT + '/simple/mark/getPrePoint',
+            async: false,
+            data: JSON.stringify({'video_name':video_name,'image_id':image_id}),
+            dataType:'json',
+            success: function(data){
+                for(var i=0;i<mark_div_list.length;i++){
+                     if(typeof(mark_div_list[i]) == 'undefined'){
+                        console.log(i);
+                        continue;
+                    }
+                    for(var j=0;j<mark_div_list[i].circle.length;j++){
+                        document.body.removeChild(mark_div_list[i].circle[j]);
+                    }
+                }
+                mark_list = data.mark_list;
+                coordinate_list = data.coordinate_list;
+                mark_div_list = [];
+                $("#mark_list").empty();
+                var offset =  $(".div1").offset();
+                for(var j=0;j<mark_list.length;j++){
+                    point= new Object();
+                    point.x = mark_list[j].x + offset.left;
+                    point.y = mark_list[j].y + offset.top;
+                    ret = SolidCircle(point.x ,point.y, 5,2,COLOR_MARK,j);
+
+                    point.circle = ret;
+                    idx = mark_div_list.length;
+                    mark_div_list.push(point);
+                    $("#mark_list").append("<li style=''  idx=" + idx + ">(" + mark_list[j].x + ',' + mark_list[j].y + ")<pre>" + coordinate_list[j] + "</pre></li>");
+                }
+                green_point = -1;
+            },
+            error: function(data){
+                console.log(data);
+            }
+        });
+}
 
 function getPointCoordinate(video_name, image_id, point_list){
     var ok = true;

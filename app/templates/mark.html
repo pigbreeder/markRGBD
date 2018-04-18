@@ -95,10 +95,9 @@ $(function() {
 
                         $("#mark_list li[idx="+green_point+']').html("(" + relativeX + ',' + relativeY + ")<pre>" + data.coordinate + "</pre>");
                          mark_div_list[green_point].circle[CIRCLE_IDX_LOC].innerHTML = green_point;
-                         for(var j =0;j<mark_div_list[green_point].circle.length;j++){
-
-                            mark_div_list[green_point].circle[j].style.backgroundColor= COLOR_MARK;
-                        }
+                         //for(var j =0;j<mark_div_list[green_point].circle.length;j++){
+                         //   mark_div_list[green_point].circle[j].style.backgroundColor= COLOR_MARK;
+                        //}
                     }else{ // 插入新点
                         idx = mark_div_list.length;
                         mark_div_list.push(point);
@@ -248,5 +247,6 @@ $(function() {
         <input type="text" name="width_slice" value="10">
         <input type="checkbox" id="show_mark_idx">是否显示标记编号
         <button class='button ' onclick="generatePoints()">生成</button>
+        <button class='button ' onclick="preGeneratePoints()">预标记</button>
     </body>  
 </html>   
