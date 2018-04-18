@@ -114,5 +114,10 @@ class ImageData(object):
 		if pre == -1:
 			return {'data':'start page not own pre'}
 		pre_data = self.cache_data['videos'][video_name]['data'][pre]
-		return {'mark_list': pre_data['mark_list'], 'coordinate_list': pre_data['coordinate_list']}
+		coordinate_list = []
+		for mark in pre_data['mark_list']:
+			ret = self.mark_check(video_name,image_id,str(mark['y']) + ',' + str(mark['x']))
+			# coordinate_list.append({'x':ret['coordinate'][0],'y':ret['coordinate'][1],'z':ret['coordinate'][2]})
+			coordinate_list.append(ret['coordinate'])
+		return {'mark_list': pre_data['mark_list'], 'coordinate_list': coordinate_list}
 		pass
