@@ -91,6 +91,8 @@ $(function() {
                         SWITCH_MODIFY_MARK=false;
                         mark_div_list[green_point] = point;
                         mark_list[green_point] = {'x':relativeX,'y':relativeY};
+                        coordinate_list[green_point] = {'x':data.coordinate[0],'y':data.coordinate[1],'z':data.coordinate[2]};
+
                         $("#mark_list li[idx="+green_point+']').html("(" + relativeX + ',' + relativeY + ")<pre>" + data.coordinate + "</pre>");
                          mark_div_list[green_point].circle[CIRCLE_IDX_LOC].innerHTML = green_point;
                          for(var j =0;j<mark_div_list[green_point].circle.length;j++){
@@ -133,9 +135,9 @@ $(function() {
             }
         }
         $("#mark_list").empty();
-        mark_list.splice(0,mark_list.length);
-        coordinate_list.splice(0,coordinate_list.length);
-        mark_div_list.splice(0,mark_div_list.length);
+        mark_list = [];
+        coordinate_list = [];
+        mark_div_list = [];
         green_point = -1;
     });
     $("#remove_mark").click(function(e) {
@@ -167,7 +169,7 @@ $(function() {
             document.body.removeChild(mark_div_list[green_point].circle[j]);
         }
         SWITCH_MODIFY_MARK=true;
-        $("#mark_list li[idx="+green_point+']').html("s请选择新点");
+        $("#mark_list li[idx="+green_point+']').html("请选择新点");
 
         delete mark_list[green_point];
         delete coordinate_list[green_point];
