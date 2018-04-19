@@ -247,6 +247,11 @@ $(function() {
         <input type="text" name="width_slice" value="10">
         <input type="checkbox" id="show_mark_idx">是否显示标记编号
         <button class='button ' onclick="generatePoints()">生成</button>
-        <button class='button ' onclick="preGeneratePoints()">预标记</button>
+        <br>
+        <button class='button ' onclick="preGeneratePoints()">预操作</button>
+        <input type="text" name="batch_op" value="" placeholder="行操作用- 列操作用,">
+        <input type="checkbox" id="move_updown_forward"> 勾选为上下移动
+        <input type="text" name="pixel_val" value="10" placeholder="移动像素大小">
+        <button class='btn ' onclick="movePixels()">移动</button>
     </body>  
 </html>   

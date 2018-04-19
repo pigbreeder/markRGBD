@@ -60,11 +60,30 @@ function generatePoints(){
         alert('请先选择四个标定点');
         return;
     }
-    point_lst = mark_list.slice();
+    point_list = mark_list.slice();
     $("#reset_mark").click();
-    point_lst = calcCrossPoint(point_lst,parseInt(height_slice),parseInt(width_slice));
-//    console.log(point_lst);
-    getPointCoordinate(video_name, image_id, point_lst);
+    point_list = calcCrossPoint(point_list,parseInt(height_slice),parseInt(width_slice));
+//    console.log(point_list);
+//    getPointCoordinate(video_name, image_id, point_list);
+    for(var i = 0;i<point_list.length;i++){
+        ret = SolidCircle(WIDTH_OFFSET + point_list[i].x, HEIGHT_OFFSET + point_list[i].y, 5, 2, COLOR_LIGHT_MARK, i);
+        point= new Object();
+        point.x = WIDTH_OFFSET + point_list[i].x;
+        point.y = HEIGHT_OFFSET + point_list[i].y;
+        point.circle = ret;
+        idx = mark_div_list.length;
+        mark_div_list.push(point);
+        mark_list.push({'x':point_list[i].x,'y':point_list[i].y});
+//        coordinate_list.push({'x':data.coordinate[0],'y':data.coordinate[1],'z':data.coordinate[2]});
+        if (green_point != -1){
+            $("#mark_list li[idx="+green_point+"]").attr('style','');
+            for(var j =0;j<mark_div_list[green_point].circle.length;j++)
+                mark_div_list[green_point].circle[j].style.backgroundColor=COLOR_MARK;
+            //ret = SolidCircle(mark_div_list[green_point].x,mark_div_list[green_point].y,5,2,'red');
+        }
+        green_point = idx;
+        $("#mark_list").append("<li style='background-color:green;color:white'  idx=" + idx + ">(" + point_list[i].x + ',' + point_list[i].y + ")<pre>" + "</li>");
+    }
 
 }
 function calcCrossPoint(point_lst, height_slice, width_slice) {

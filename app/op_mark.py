@@ -97,6 +97,7 @@ class ImageData(object):
 			mark_list = []
 		if coordinate_list == None:
 			coordinate_list = []
+		_, coordinate_list = self.get_mark_coordinate(video_name,image_id,mark_list)
 		self.cache_data['videos'][video_name]['data'][image_id] = {'mark_list':mark_list, 'coordinate_list':coordinate_list}
 		t_time = self.cache_data['insert_time']
 		tt_time = time.time()
@@ -114,10 +115,17 @@ class ImageData(object):
 		if pre == -1:
 			return {'data':'start page not own pre'}
 		pre_data = self.cache_data['videos'][video_name]['data'][pre]
-		coordinate_list = []
-		for mark in pre_data['mark_list']:
+		coordinate_list1, _ = self.get_mark_coordinate(video_name,image_id,pre_data['mark_list'])
+		return  {'mark_list': pre_data['mark_list'], 'coordinate_list': coordinate_list}
+
+
+# 传入真实的video_name 和image_id两项与对应的mark_list，为给mark_list找到对应的coordinate
+	def get_mark_coordinate(self,video_name,image_id,mark_list):
+
+		coordinate_list1 = []
+		coordinate_list2 = []
+		for mark in mark_list:
 			ret = self.mark_check(video_name,image_id,str(mark['y']) + ',' + str(mark['x']))
-			# coordinate_list.append({'x':ret['coordinate'][0],'y':ret['coordinate'][1],'z':ret['coordinate'][2]})
-			coordinate_list.append(ret['coordinate'])
-		return {'mark_list': pre_data['mark_list'], 'coordinate_list': coordinate_list}
-		pass
+			coordinate_list1.append(ret['coordinate'])
+			coordinate_list2.append({'x':ret['coordinate'][0],'y':ret['coordinate'][1],'z':ret['coordinate'][2]})
+		return coordinate_list1, coordinate_list2
