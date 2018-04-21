@@ -115,7 +115,7 @@ class ImageData(object):
 		if pre == -1:
 			return {'data':'start page not own pre'}
 		pre_data = self.cache_data['videos'][video_name]['data'][pre]
-		coordinate_list1, _ = self.get_mark_coordinate(video_name,image_id,pre_data['mark_list'])
+		coordinate_list, _ = self.get_mark_coordinate(video_name,image_id,pre_data['mark_list'])
 		return  {'mark_list': pre_data['mark_list'], 'coordinate_list': coordinate_list}
 
 
