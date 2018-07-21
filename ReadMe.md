@@ -14,3 +14,4 @@
 4. 在app/config.py中输入对应的参数
 5. gen_file_config.py 完成
 6. 在根目录运行程序进行标定。最后结果存储在config.py中设置的路径中。
+7. 运行 nohup uwsgi --http 0.0.0.0:5000 --file run.py --callable app --master --processes 1 --threads 12 --stats 127.0.0.1:9191
